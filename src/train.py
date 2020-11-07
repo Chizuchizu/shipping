@@ -23,7 +23,7 @@ params = {
     'objective': 'regression',
     'metric': 'rmse',
     'learning_rate': 0.01,
-    "feature_fraction": 0.7,
+    # "feature_fraction": 0.7,
     # 'max_depth': 7,
     # 'num_leaves': 64,
     # 'max_bin': 31,
@@ -87,6 +87,8 @@ with mlflow.start_run(run_name="all"):
         f"all_rmse": score,
         f"all_rmse_round": round(score, 4)
     })
+
+    mlflow.log_param("columns", train.columns)
 
 
 print(score)

@@ -75,21 +75,27 @@ def preprocess(data, cat_cols_):
 
 
 def feature_engineering(data):
+    data["cost"] = data["gross_weight"] * data["freight_cost"]
+
     groupby_cols = ["shipment_mode", "shipping_company", "weekday", "drop_off_point", "hour"]
-    calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges"]
+    calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges", "cost"]
     data[TARGET] = np.nan
     data.loc[data["train"], TARGET] = target.values
 
     for groupby_col in groupby_cols:
         for calc_col in calc_cols:
-            data[f"{groupby_col}_{calc_col}"] = data.groupby(groupby_col)[calc_col].transform("mean")
-            data[f"{groupby_col}_{calc_col}_s"] = data.groupby(groupby_col)[calc_col].transform("std")
-            if (calc_col == TARGET) and (groupby_col in ["weekday", "drop_off_point", "shipping_company", "shipment_mode"]):
+            if (groupby_col == "shipment_id") and (calc_col == TARGET):
                 continue
             else:
-                data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
+                data[f"{groupby_col}_{calc_col}"] = data.groupby(groupby_col)[calc_col].transform("mean")
+                data[f"{groupby_col}_{calc_col}_s"] = data.groupby(groupby_col)[calc_col].transform("std")
+                # if (calc_col == TARGET) and (groupby_col in ["shipping_mode"]):
+                #     data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
+                if not calc_col == TARGET:
+                    data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
 
     # data = data.drop(columns=TARGET)
+
 
     return data
 
