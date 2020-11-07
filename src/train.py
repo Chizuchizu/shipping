@@ -1,4 +1,5 @@
 import lightgbm as lgb
+import optuna.integration.lightgbm as lgb
 from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 import numpy as np
