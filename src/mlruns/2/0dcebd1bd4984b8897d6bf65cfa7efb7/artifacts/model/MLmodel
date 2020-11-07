@@ -1,0 +1,12 @@
+artifact_path: model
+flavors:
+  lightgbm:
+    data: model.lgb
+    lgb_version: 3.0.0
+  python_function:
+    data: model.lgb
+    env: conda.yaml
+    loader_module: mlflow.lightgbm
+    python_version: 3.7.9
+run_id: 0dcebd1bd4984b8897d6bf65cfa7efb7
+utc_time_created: '2020-11-07 01:47:02.053992'
