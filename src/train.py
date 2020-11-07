@@ -1,5 +1,4 @@
 import lightgbm as lgb
-import optuna.integration.lightgbm as lgb
 from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,23 +14,42 @@ import mlflow.lightgbm
 N_FOLDS = 4
 VERSION = 2
 DEBUG = True
+OPTUNA = False
 NUM_CLASSES = 4
 SEED = 22
 num_rounds = 2000
 
-params = {
-    'objective': 'regression',
-    'metric': 'rmse',
-    'learning_rate': 0.01,
-    # "feature_fraction": 0.7,
-    # 'max_depth': 7,
-    # 'num_leaves': 64,
-    # 'max_bin': 31,
-    # 'nthread': -1,
-    # 'bagging_freq': 1,
-    'verbose': -1,
-    'seed': SEED,
-}
+if OPTUNA:
+    import optuna.integration.lightgbm as lgb
+
+    params = {
+        'objective': 'regression',
+        'metric': 'rmse',
+        'learning_rate': 0.01,
+        # "feature_fraction": 0.7,
+        # 'max_depth': 7,
+        # 'num_leaves': 64,
+        # 'max_bin': 31,
+        # 'nthread': -1,
+        # 'bagging_freq': 1,
+        'verbose': -1,
+        'seed': SEED,
+    }
+else:
+    params = {
+        'objective': 'regression',
+        'metric': 'rmse',
+        'learning_rate': 0.01,
+        "feature_fraction": 0.7,
+        'max_depth': 7,
+        'num_leaves': 31,
+        'max_bin': 31,
+        # 'nthread': -1,
+        'bagging_freq': 0,
+        "min_child_samples": 20,
+        'verbose': -1,
+        'seed': SEED,
+    }
 
 # data = pd.read_pickle(f"../data/train_test_v{VERSION}.pkl")
 data = load_data()
