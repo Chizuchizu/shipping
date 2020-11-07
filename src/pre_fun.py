@@ -1,4 +1,5 @@
 from functools import wraps
+from fbprophet.make_holidays import make_holidays_df
 
 import time
 from sklearn.decomposition import PCA
@@ -59,6 +60,11 @@ def concat_train_test(train_, test_, drop_cols):
 
 
 def preprocess(data, cat_cols_):
+    year_list = [2019, 2020]
+    holidays = make_holidays_df(year_list=year_list, country='UK')
+    hol = pd.DataFrame(holidays["ds"])  # .rename(columns={"ds": "send_timestamp"})
+    hol["is_hol"] = 1
+
     for cat_col in cat_cols_:
         data[cat_col] = data[cat_col].astype("category").cat.codes
 
@@ -70,14 +76,27 @@ def preprocess(data, cat_cols_):
     data["weekday"] = data[memo].apply(lambda x: x.dayofweek)
     data["hour"] = data[memo].apply(lambda x: x.hour)
 
-    data = data.drop(columns=memo)
+    data["ds"] = pd.to_datetime(data[memo].dt.date)
+
+    data["is_hol"] = data["ds"].apply(lambda x: x in hol["ds"].to_list())
+    data["is_hol"] = data["is_hol"].fillna(0)
+
+    data = data.drop(columns=[memo, "ds"])
     return data
 
 
 def feature_engineering(data):
     data["cost"] = data["gross_weight"] * data["freight_cost"]
 
-    groupby_cols = ["shipment_mode", "shipping_company", "weekday", "drop_off_point", "hour"]
+    data["month_count"] = data.groupby(["year", "month"])["cost"].transform("count")
+    data["day_count"] = data.groupby(["year", "month", "day"])["cost"].transform("count")
+    data["weekday_count"] = data.groupby(["year", "month", "weekday"])["cost"].transform("count")
+    data["hour_count"] = data.groupby(["year", "month", "hour"])["cost"].transform("count")
+    count_list = ["month", "day", "weekday", "hour"]
+    # for count_col in count_list:
+    #     data[f"{count_col}_diff"] = data[f"{count_col}_count"] - data.groupby(count_col)["cost"].transform("count")
+
+    groupby_cols = ["shipment_mode", "shipping_company", "weekday", "drop_off_point", "hour", "is_hol"]
     calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges", "cost"]
     data[TARGET] = np.nan
     data.loc[data["train"], TARGET] = target.values
@@ -95,7 +114,6 @@ def feature_engineering(data):
                     data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
 
     # data = data.drop(columns=TARGET)
-
 
     return data
 

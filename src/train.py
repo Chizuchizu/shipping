@@ -65,7 +65,7 @@ for fold, (train_idx, valid_idx) in enumerate(kfold.split(train, target)):
             train_set=d_train,
             num_boost_round=num_rounds,
             valid_sets=[d_train, d_valid],
-            verbose_eval=100,
+            verbose_eval=500,
             early_stopping_rounds=100
         )
 
