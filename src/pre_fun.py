@@ -75,7 +75,7 @@ def preprocess(data, cat_cols_):
 
 
 def feature_engineering(data):
-    groupby_cols = ["shipment_mode", "shipping_company", "weekday", "drop_off_point"]
+    groupby_cols = ["shipment_mode", "shipping_company", "weekday", "drop_off_point", "hour"]
     calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges"]
     data[TARGET] = np.nan
     data.loc[data["train"], TARGET] = target.values

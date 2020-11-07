@@ -17,17 +17,18 @@ VERSION = 2
 DEBUG = True
 NUM_CLASSES = 4
 SEED = 22
-num_rounds = 1200
+num_rounds = 2000
 
 params = {
     'objective': 'regression',
     'metric': 'rmse',
     'learning_rate': 0.01,
-    'max_depth': 7,
-    'num_leaves': 64,
-    'max_bin': 31,
-    'nthread': -1,
-    'bagging_freq': 1,
+    "feature_fraction": 0.7,
+    # 'max_depth': 7,
+    # 'num_leaves': 64,
+    # 'max_bin': 31,
+    # 'nthread': -1,
+    # 'bagging_freq': 1,
     'verbose': -1,
     'seed': SEED,
 }
