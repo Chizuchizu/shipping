@@ -1,0 +1,22 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/.gitignore
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/shipping.iml
+data/
+main.py
+memo/226608_pre/
+mlruns/
+notebooks/
+outputs/
+src/__pycache__/
+src/mlruns/.trash/
+src/mlruns/1/33321c0a718d45faa18d580becf1a63d/artifacts/
+src/mlruns/1/33321c0a718d45faa18d580becf1a63d/params/
+src/mlruns/2/6bce03401ca24112bde076cc1e2a9ef2/artifacts/
+src/mlruns/2/6bce03401ca24112bde076cc1e2a9ef2/params/
+src/mlruns/3/26b539ea70a94cb9846b2471a4c3c296/artifacts/
+src/mlruns/3/26b539ea70a94cb9846b2471a4c3c296/params/
+src/mlruns/4/7fdb202ae4c24eb58a63a2c8c3e62968/artifacts/
+src/mlruns/4/7fdb202ae4c24eb58a63a2c8c3e62968/params/
