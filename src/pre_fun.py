@@ -96,8 +96,8 @@ def feature_engineering(data):
     # for count_col in count_list:
     #     data[f"{count_col}_diff"] = data[f"{count_col}_count"] - data.groupby(count_col)["cost"].transform("count")
 
-    groupby_cols = ["shipment_mode", "shipping_company", "weekday", "drop_off_point", "hour", "is_hol"]
-    calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges", "cost"]
+    groupby_cols = ["shipment_mode", "weekday", "hour", "is_hol", "shipment_id", "shipping_company"]
+    calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges", "cost", "month_count", "day_count", "weekday_count"]
     data[TARGET] = np.nan
     data.loc[data["train"], TARGET] = target.values
 

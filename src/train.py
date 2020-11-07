@@ -14,7 +14,7 @@ import mlflow.lightgbm
 N_FOLDS = 4
 VERSION = 2
 DEBUG = True
-OPTUNA = False
+OPTUNA = True
 NUM_CLASSES = 4
 SEED = 22
 num_rounds = 2000
@@ -62,6 +62,7 @@ pred = np.zeros(test.shape[0])
 score = 0
 
 rand = np.random.randint(0, 1000000)
+experiment_name = f"{'optuna_' if OPTUNA else ''}{rand}"
 
 mlflow.lightgbm.autolog()
 for fold, (train_idx, valid_idx) in enumerate(kfold.split(train, target)):
@@ -75,7 +76,7 @@ for fold, (train_idx, valid_idx) in enumerate(kfold.split(train, target)):
     del y_train
     del y_valid
     gc.collect()
-    mlflow.set_experiment(f'training_{rand}')
+    mlflow.set_experiment(experiment_name)
 
     with mlflow.start_run(run_name=f"fold_{fold+1}"):
         estimator = lgb.train(
@@ -98,7 +99,7 @@ for fold, (train_idx, valid_idx) in enumerate(kfold.split(train, target)):
             f"fold_{fold+1}_rmse": estimator.best_score["valid_1"]["rmse"]
         })
 
-mlflow.set_experiment(f'training_{rand}')
+mlflow.set_experiment(experiment_name)
 with mlflow.start_run(run_name="all"):
 
     mlflow.log_metrics({
