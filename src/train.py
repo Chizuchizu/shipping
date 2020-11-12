@@ -1,6 +1,7 @@
-import lightgbm as lgb
 from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error as mse
+
 import numpy as np
 import pandas as pd
 import gc
@@ -14,7 +15,7 @@ import mlflow.lightgbm
 N_FOLDS = 4
 VERSION = 2
 DEBUG = True
-OPTUNA = True
+OPTUNA = False
 NUM_CLASSES = 4
 SEED = 22
 num_rounds = 2000
@@ -36,6 +37,7 @@ if OPTUNA:
         'seed': SEED,
     }
 else:
+    import lightgbm as lgb
     params = {
         'objective': 'regression',
         'metric': 'rmse',
