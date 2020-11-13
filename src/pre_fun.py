@@ -95,7 +95,8 @@ def feature_engineering(data):
     # for count_col in count_list:
     #     data[f"{count_col}_diff"] = data[f"{count_col}_count"] - data.groupby(count_col)["cost"].transform("count")
 
-    groupby_cols = ["shipment_mode", "weekday", "drop_off_point", "shipping_company", "hour"]
+    groupby_cols = ["shipment_mode", "weekday", "drop_off_point", "shipping_company", "hour", "destination_country",
+                    "shipment_id"]
     # calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges", "cost", "month_count", "day_count", "weekday_count"]
     calc_cols = ["freight_cost", "gross_weight", "shipment_charges", "cost"]
     data[TARGET] = np.nan
@@ -107,6 +108,8 @@ def feature_engineering(data):
                 continue
             else:
                 data[f"{groupby_col}_{calc_col}"] = data.groupby(groupby_col)[calc_col].transform("mean")
+                data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
+
                 # data[f"{groupby_col}_{calc_col}_s"] = data.groupby(groupby_col)[calc_col].transform("std")
                 # if (calc_col == TARGET) and (groupby_col in ["shipping_mode"]):
                 #     data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
@@ -115,6 +118,14 @@ def feature_engineering(data):
 
     # data = data.drop(columns=TARGET)
 
+    """
+    target encoding
+    """
+
+    # data["te_month_mode"] = data.groupby(["year", "month", "shipment_mode"])[TARGET].transform("mean")
+    # data["te_month_mode_country"] = data.groupby(["year", "month", "shipment_mode", "destination_country"])[
+    #     TARGET].transform("mean")
+    # data["te_hour_mode"] = data.groupby(["hour", "shipment_mode"])[TARGET].transform("mean")
     return data
 
 
