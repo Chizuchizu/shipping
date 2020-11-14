@@ -136,3 +136,10 @@ def load_data():
 
     merged = feature_engineering(merged)
     return merged
+
+
+def base_data():
+    return preprocess(concat_train_test(train, test, unnecessary_cols), cat_cols)
+
+
+print()
