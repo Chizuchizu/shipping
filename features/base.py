@@ -44,6 +44,7 @@ class Feature(metaclass=ABCMeta):
 
         # ユーザーに登録してもらう
         # self.data = pd.read_pickle("../features_data/data.pkl")
+        self.data = pd.DataFrame()
         self.data_path = Path(self.dir) / f"{self.name}.pkl"
 
     def run(self):
