@@ -142,4 +142,4 @@ def base_data():
     return preprocess(concat_train_test(train, test, unnecessary_cols), cat_cols)
 
 
-print()
+# print()

@@ -1,8 +1,3 @@
-"""
-https://amalog.hateblo.jp/entry/kaggle-feature-management
-https://speakerdeck.com/takapy/detafen-xi-konpenioite-te-zheng-liang-guan-li-nipi-bi-siteiruquan-ren-lei-nichuan-etaixiang-i?slide=63
-"""
-
 from features.base import Feature, generate_features, create_memo
 from src.pre_fun import base_data
 
@@ -30,7 +25,7 @@ class Groupby_mean(Feature):
                 self.data[f"{groupby_col}_{calc_col}"] = data.groupby(groupby_col)[calc_col].transform("mean")
                 data[f"{groupby_col}_{calc_col}"] = self.data[f"{groupby_col}_{calc_col}"].copy()
 
-        create_memo(f"gr_mean_{groupby_col}_{calc_cols}", "groupby_meanです")
+        create_memo(f"gr_mean_{groupby_cols}_{calc_cols}", "groupby_meanです")
 
 
 class Groupby_diff(Feature):
@@ -38,9 +33,9 @@ class Groupby_diff(Feature):
         for groupby_col in groupby_cols:
             for calc_col in calc_cols:
                 self.data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
-                data[f"{groupby_col}_{calc_col}_diff"] = self.data[f"{groupby_col}_{calc_col}"] - data[calc_col].copy()
+                data[f"{groupby_col}_{calc_col}_diff"] = self.data[f"{groupby_col}_{calc_col}_diff"].copy()
 
-        create_memo(f"gr_diff_{groupby_col}_{calc_cols}", "groupby_meannoのdiffです")
+        create_memo(f"gr_diff_{groupby_cols}_{calc_cols}", "groupby_meannoのdiffです")
 
 
 class Groupby_std(Feature):
@@ -51,10 +46,10 @@ class Groupby_std(Feature):
                 self.data[f"{groupby_col}_{calc_col}_s"] = data.groupby(groupby_col)[calc_col].transform("std")
                 data[f"{groupby_col}_{calc_col}_s"] = self.data[f"{groupby_col}_{calc_col}_s"].copy()
 
-        create_memo(f"gr_std_{groupby_col}_{calc_cols}", "groupby_stdです")
+        create_memo(f"gr_std_{groupby_cols}_{calc_cols}", "groupby_stdです")
 
 
-@hydra.main(config_name="../config/config.yaml")
+@hydra.main(config_name="../config/features.yaml")
 def run(cfg):
     generate_features(globals(), cfg.overwrite)
 

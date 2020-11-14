@@ -7,6 +7,9 @@ from abc import ABCMeta, abstractmethod
 from pathlib import Path
 
 import pandas as pd
+import hydra
+from omegaconf import DictConfig, OmegaConf
+
 
 from utils import timer
 
@@ -23,9 +26,10 @@ def get_features(namespace):
             yield v()
 
 
-def generate_features(namespace):
+# @hydra.main(config_path="config.yaml")
+def generate_features(namespace, overwrite):
     for f in get_features(namespace):
-        if f.data_path.exists():
+        if f.data_path.exists() and not overwrite:
             print(f.name, 'was skipped')
         else:
             f.run().save()
@@ -64,12 +68,15 @@ class Feature(metaclass=ABCMeta):
         self.data.to_pickle(str(self.data_path))
 
     def load(self):
-
         self.data = pd.read_pickle(str(self.data_path))
 
 
 def create_memo(col_name, desc):
     file_path = Feature.dir + "/_features_memo.csv"
+
+    # hydraのログパスにカレントディレクトリが移動してしまうので初期化
+    # 影響がないことは確認済み
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     if not os.path.isfile(file_path):
         with open(file_path, "w"): pass
