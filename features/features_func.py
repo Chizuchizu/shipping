@@ -25,7 +25,7 @@ class Groupby_mean(Feature):
                 self.data[f"{groupby_col}_{calc_col}"] = data.groupby(groupby_col)[calc_col].transform("mean")
                 data[f"{groupby_col}_{calc_col}"] = self.data[f"{groupby_col}_{calc_col}"].copy()
 
-        create_memo(f"gr_mean_{groupby_cols}_{calc_cols}", "groupby_meanです")
+        create_memo("groupby_mean", f"gr_mean_{groupby_cols}_{calc_cols}")
 
 
 class Groupby_diff(Feature):
@@ -35,7 +35,7 @@ class Groupby_diff(Feature):
                 self.data[f"{groupby_col}_{calc_col}_diff"] = data[f"{groupby_col}_{calc_col}"] - data[calc_col]
                 data[f"{groupby_col}_{calc_col}_diff"] = self.data[f"{groupby_col}_{calc_col}_diff"].copy()
 
-        create_memo(f"gr_diff_{groupby_cols}_{calc_cols}", "groupby_meannoのdiffです")
+        create_memo("groupby_diff", f"gr_diff_{groupby_cols}_{calc_cols}")
 
 
 class Groupby_std(Feature):
@@ -46,7 +46,7 @@ class Groupby_std(Feature):
                 self.data[f"{groupby_col}_{calc_col}_s"] = data.groupby(groupby_col)[calc_col].transform("std")
                 data[f"{groupby_col}_{calc_col}_s"] = self.data[f"{groupby_col}_{calc_col}_s"].copy()
 
-        create_memo(f"gr_std_{groupby_cols}_{calc_cols}", "groupby_stdです")
+        create_memo("groupby_std", f"gr_std_{groupby_cols}_{calc_cols}")
 
 
 @hydra.main(config_name="../config/features.yaml")
