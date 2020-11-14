@@ -60,6 +60,9 @@ def concat_train_test(train_, test_, drop_cols):
 
 
 def preprocess(data, cat_cols_):
+    data[TARGET] = np.nan
+    data.loc[data["train"], TARGET] = target.values
+
     year_list = [2019, 2020]
     holidays = make_holidays_df(year_list=year_list, country='UK')
     hol = pd.DataFrame(holidays["ds"])  # .rename(columns={"ds": "send_timestamp"})
@@ -99,9 +102,6 @@ def feature_engineering(data):
                     "shipment_id"]
     # calc_cols = [TARGET, "freight_cost", "gross_weight", "shipment_charges", "cost", "month_count", "day_count", "weekday_count"]
     calc_cols = ["freight_cost", "gross_weight", "shipment_charges", "cost"]
-    data[TARGET] = np.nan
-    data.loc[data["train"], TARGET] = target.values
-
     for groupby_col in groupby_cols:
         for calc_col in calc_cols:
             if (groupby_col == "shipment_id") and (calc_col == TARGET):
@@ -139,7 +139,8 @@ def load_data():
 
 
 def base_data():
-    return preprocess(concat_train_test(train, test, unnecessary_cols), cat_cols)
-
+    data = preprocess(concat_train_test(train, test, unnecessary_cols), cat_cols)
+    data.to_pickle("../features_data/data.pkl")
+    return data
 
 # print()
