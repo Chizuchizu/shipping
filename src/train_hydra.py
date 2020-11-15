@@ -1,6 +1,5 @@
 from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
-from sklearn.metrics import mean_squared_error as mse
 
 import numpy as np
 import pandas as pd
@@ -77,10 +76,10 @@ def main(cfg):
 
             explainer = shap.TreeExplainer(estimator, data=x_train, check_additivity=False)
             tr_x_shap_values = explainer.shap_values(x_train, check_additivity=False)
-            fig = shap.summary_plot(shap_values=tr_x_shap_values,
-                                    features=x_train,
-                                    feature_names=x_train.columns,
-                                    show=False)
+            _ = shap.summary_plot(shap_values=tr_x_shap_values,
+                                  features=x_train,
+                                  feature_names=x_train.columns,
+                                  show=False)
             plt.savefig("shap_summary.png")
             plt.clf()
 
