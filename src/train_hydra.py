@@ -13,6 +13,18 @@ import mlflow
 import mlflow.lightgbm
 
 
+def save_log(score, rmse):
+    mlflow.log_metrics({
+        f"all_rmse": rmse,
+        f"all_score - 10000": score
+    })
+    mlflow.log_artifact(".hydra/config.yaml")
+    mlflow.log_artifact(".hydra/hydra.yaml")
+    mlflow.log_artifact(".hydra/overrides.yaml")
+    mlflow.log_artifact("train_hydra.log")
+    mlflow.log_artifact("features.csv")
+
+
 @hydra.main(config_name="../config/training.yaml")
 def main(cfg):
     cwd = Path(hydra.utils.get_original_cwd())
@@ -70,7 +82,8 @@ def main(cfg):
 
             print(fold + 1, "done")
 
-            score += estimator.best_score["valid_1"]["rmse"] / cfg.base.n_folds
+            rmse = estimator.best_score["valid_1"]["rmse"]
+            score += rmse / cfg.base.n_folds
 
             """shap"""
 
@@ -88,18 +101,8 @@ def main(cfg):
             del d_train
             del d_valid
 
-            mlflow.log_metrics({
-                f"fold_{fold + 1}_rmse": estimator.best_score["valid_1"]["rmse"],
-                f"score - 10000": np.exp(-estimator.best_score["valid_1"]["rmse"]) * 10000
+            save_log(rmse, np.exp(-rmse) * 10000)
 
-            })
-            # mlflow.log_param("columns", train.columns)
-
-            mlflow.log_artifact(".hydra/config.yaml")
-            mlflow.log_artifact(".hydra/hydra.yaml")
-            mlflow.log_artifact(".hydra/overrides.yaml")
-            mlflow.log_artifact("train_hydra.log")
-            mlflow.log_artifact("features.csv")
             mlflow.log_artifact("shap_summary.png")
 
     print(score)
@@ -110,20 +113,9 @@ def main(cfg):
 
     mlflow.set_experiment("all")
     with mlflow.start_run(run_name=f"{experiment_name}"):
-        mlflow.log_metrics({
-            f"all_rmse": score,
-            f"all_rmse_round": round(score, 4),
-            f"all_score - 10000": np.exp(-score) * 10000
-        })
 
-        # mlflow.log_param("columns", train.columns)
+        save_log(score, np.exp(-score) * 10000)
         mlflow.log_artifact(cwd / f"../outputs/{rand}.csv")
-
-        mlflow.log_artifact(".hydra/config.yaml")
-        mlflow.log_artifact(".hydra/hydra.yaml")
-        mlflow.log_artifact(".hydra/overrides.yaml")
-        mlflow.log_artifact("train_hydra.log")
-        mlflow.log_artifact("features.csv")
 
 
 if __name__ == "__main__":
