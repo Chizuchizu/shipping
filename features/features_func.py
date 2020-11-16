@@ -1,9 +1,11 @@
 from features.base import Feature, generate_features, create_memo
 from src.pre_fun import base_data
 
+import cudf
 import hydra
 import numpy as np
-from xfeat import Pipeline, SelectNumerical, ArithmeticCombinations
+from sklearn.model_selection import KFold
+from xfeat import Pipeline, SelectNumerical, ArithmeticCombinations, TargetEncoder
 
 Feature.dir = "../features_data"
 data = base_data()
@@ -38,6 +40,25 @@ class Xfeat_data(Feature):
         self.data["shipping_time"] = data["shipping_time"].copy()
 
         create_memo("xfeat_data", "xfeatで作った特徴量")
+
+
+class Target_Encoding(Feature):
+    def create_features(self):
+        # ごめんなさい　関数やるの面倒だった
+        fold = KFold(n_splits=4, shuffle=True, random_state=22)
+        encoder = TargetEncoder(
+            input_cols=groupby_cols,
+            target_col="shipping_time",
+            # output_prefix="te_",
+            fold=fold
+        )
+
+        self.data = encoder.fit_transform(cudf.from_pandas(data.fillna(0)))
+
+        use_cols = [col for col in self.data.columns if "_te" in col]
+        self.data = self.data[use_cols].to_pandas()
+
+        create_memo("target_encoding", "xfeatでやった")
 
 
 class Processing_days(Feature):
