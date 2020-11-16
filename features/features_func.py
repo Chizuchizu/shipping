@@ -2,6 +2,8 @@ from features.base import Feature, generate_features, create_memo
 from src.pre_fun import base_data
 
 import hydra
+import numpy as np
+from xfeat import Pipeline, SelectNumerical, ArithmeticCombinations
 
 Feature.dir = "../features_data"
 data = base_data()
@@ -9,6 +11,45 @@ data = base_data()
 groupby_cols = ["shipment_mode", "weekday", "drop_off_point", "shipping_company", "hour", "destination_country",
                 "shipment_id"]
 calc_cols = ["freight_cost", "gross_weight", "shipment_charges", "cost"]
+
+
+class Base_data(Feature):
+    def create_features(self):
+        self.data = data.drop(columns=["processing_days", "cut_off_time"])
+        create_memo("base_data", "初期")
+
+
+class Xfeat_data(Feature):
+    def create_features(self):
+        self.data = data.drop(columns=["train"])
+
+        self.data = Pipeline(
+            [
+                SelectNumerical(),
+                ArithmeticCombinations(
+                    exclude_cols=["shipping_time", "train"], drop_origin=True, operator="+", r=2,
+                ),
+            ]
+        ).fit_transform(data).reset_index(
+            drop=True
+        )
+
+        self.data["train"] = data["train"].copy()
+        self.data["shipping_time"] = data["shipping_time"].copy()
+
+        create_memo("xfeat_data", "xfeatで作った特徴量")
+
+
+class Processing_days(Feature):
+    def create_features(self):
+        self.data["processing_days"] = (data["processing_days"] == "24/7").astype(int)
+        create_memo("processing_days", "年中無休で港が開いているならTrue")
+
+
+class Cut_off_time(Feature):
+    def create_features(self):
+        self.data["cut_off_time"] = (data["cut_off_time"] == "24/7").astype(int)
+        create_memo("cut_off_time", "いつでも商品を受け取ることができるならTrue")
 
 
 class Cost(Feature):
@@ -47,6 +88,19 @@ class Groupby_std(Feature):
                 data[f"{groupby_col}_{calc_col}_s"] = self.data[f"{groupby_col}_{calc_col}_s"].copy()
 
         create_memo("groupby_std", f"gr_std_{groupby_cols}_{calc_cols}")
+
+
+# https://github.com/tks0123456789/kaggle-Walmart_Trip_Type
+def sign_log1p_abs(x):
+    return np.sign(x) * np.log1p(np.abs(x))
+
+
+class Sign_log1p_abs(Feature):
+    def create_features(self):
+        for calc_col in calc_cols:
+            self.data[f"sign_log1p_abs_{calc_col}"] = data[calc_col].apply(sign_log1p_abs)
+
+        create_memo(f"sign_log1p_abs_{calc_cols}", "tkmさんの特徴量、それっぽいやつ")
 
 
 @hydra.main(config_name="../config/features.yaml")

@@ -12,6 +12,9 @@ train = pd.read_csv("../data/train_2_pr.csv").iloc[:, 1:]
 test = pd.read_csv("../data/test_2.csv").iloc[:, 1:]
 target = train[TARGET]
 
+details = pd.read_csv("../data/shipping_companies_details_1.csv").drop(
+    columns=["drop_off_point", "tat", "shipment_charges", "source_country", "pick_up_point"])
+
 train = train.drop(columns=TARGET)
 """
 pick_upは全てA
@@ -67,6 +70,12 @@ def preprocess(data, cat_cols_):
     holidays = make_holidays_df(year_list=year_list, country='UK')
     hol = pd.DataFrame(holidays["ds"])  # .rename(columns={"ds": "send_timestamp"})
     hol["is_hol"] = 1
+
+    """concat details"""
+    keys = ["shipment_mode", "destination_country", "shipping_company"]
+    data = data.merge(details, on=keys, how="left")
+
+    data["max_cs"] = data["max_cs"].str.replace(",", "").astype(float)
 
     for cat_col in cat_cols_:
         data[cat_col] = data[cat_col].astype("category").cat.codes
