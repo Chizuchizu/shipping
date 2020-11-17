@@ -46,11 +46,9 @@ def main(cfg):
     data = pd.concat(data, axis=1)
 
     train = data[data["train"]].drop(columns="train")
-    test = data[~data["train"]].drop(columns=["train", "shipping_time"])
     target = train["shipping_time"]
     train = train.drop(columns="shipping_time")
     kfold = KFold(n_splits=cfg.base.n_folds, shuffle=True, random_state=cfg.base.seed)
-    pred = np.zeros(test.shape[0])
     score = 0
 
     rand = np.random.randint(0, 1000000)
@@ -111,22 +109,17 @@ def main(cfg):
         else:
             imp_df += perm_imp_df / cfg.base.n_folds
 
-    imp_df.sort_values("importances_mean", ascending=False).to_csv("permutation_importance.csv", index=False)
+    imp_df.sort_values("importances_mean", ascending=False).to_csv("permutation_importance.csv")
     can_use = imp_df[imp_df.importances_mean < 0]
 
-    can_use.to_csv("can_use.csv", index=False)
+    can_use.to_csv("can_use.csv")
 
     print(score)
-    # if not DEBUG:
-    ss = pd.read_csv(cwd / "../data/submission_2.csv")
-    ss["shipping_time"] = pred.round(4)
-    ss["shipping_time"].to_csv(cwd / f"../outputs/{rand}.csv", index=False, header=False)
 
     mlflow.set_experiment("permutation_importance")
     with mlflow.start_run(run_name=f"{experiment_name}"):
 
         save_log(score, np.exp(-score) * 10000)
-        mlflow.log_artifact(cwd / f"../outputs/{rand}.csv")
         mlflow.log_artifact("permutation_importance.csv")
         mlflow.log_artifact("can_use.csv")
 
