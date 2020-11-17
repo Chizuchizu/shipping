@@ -113,6 +113,7 @@ def main(cfg):
     can_use = imp_df[imp_df.importances_mean < 0]
 
     can_use.to_csv("can_use.csv")
+    can_use.to_csv(cwd / f"../features_data/per_{rand}.csv")
 
     print(score)
 

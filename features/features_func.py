@@ -2,6 +2,7 @@ from features.base import Feature, generate_features, create_memo
 from src.pre_fun import base_data
 
 import cudf
+import pandas as pd
 import hydra
 import numpy as np
 from sklearn.model_selection import KFold
@@ -43,8 +44,10 @@ class Xfeat_data(Feature):
             drop=True
         )
 
-        self.data["train"] = data["train"].copy()
-        self.data["shipping_time"] = data["shipping_time"].copy()
+        # self.data["train"] = data["train"].copy()
+        # self.data["shipping_time"] = data["shipping_time"].copy()
+
+        self.data = pd.concat([self.data, data.drop(columns=["processing_days", "cut_off_time"])], axis=1)
 
         create_memo("xfeat_data", "xfeatで作った特徴量")
 
