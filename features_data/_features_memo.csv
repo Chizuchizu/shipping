@@ -17,3 +17,4 @@ xfeat_data,xfeatで作った特徴量
 target_encoding,xfeatでやった
 "sign_log1p_abs_['freight_cost', 'gross_weight', 'shipment_charges', 'cost']",tkmさんの特徴量、それっぽいやつ
 "sign_log1p_abs_['freight_cost', 'gross_weight', 'shipment_charges', 'cost']",tkmさんの特徴量、それっぽいやつ
+"sign_log1p_abs_['freight_cost', 'gross_weight', 'shipment_charges', 'cost']",tkmさんの特徴量、それっぽいやつ

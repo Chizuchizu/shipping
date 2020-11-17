@@ -15,6 +15,13 @@ groupby_cols = ["shipment_mode", "weekday", "drop_off_point", "shipping_company"
 calc_cols = ["freight_cost", "gross_weight", "shipment_charges", "cost"]
 
 
+class Cost(Feature):
+    def create_features(self):
+        self.data["cost"] = data["gross_weight"] * data["freight_cost"]
+        data["cost"] = self.data["cost"].copy()
+        create_memo("cost", "実際にかかった費用")
+
+
 class Base_data(Feature):
     def create_features(self):
         self.data = data.drop(columns=["processing_days", "cut_off_time"])
@@ -47,7 +54,9 @@ class Target_Encoding(Feature):
         # ごめんなさい　関数やるの面倒だった
         fold = KFold(n_splits=4, shuffle=True, random_state=22)
         encoder = TargetEncoder(
-            input_cols=groupby_cols,
+            input_cols=[
+                "shipment_mode", "weekday", "drop_off_point", "shipping_company", "hour", "destination_country"
+            ],
             target_col="shipping_time",
             # output_prefix="te_",
             fold=fold
@@ -71,13 +80,6 @@ class Cut_off_time(Feature):
     def create_features(self):
         self.data["cut_off_time"] = (data["cut_off_time"] == "24/7").astype(int)
         create_memo("cut_off_time", "いつでも商品を受け取ることができるならTrue")
-
-
-class Cost(Feature):
-    def create_features(self):
-        self.data["cost"] = data["gross_weight"] * data["freight_cost"]
-        data["cost"] = self.data["cost"].copy()
-        create_memo("cost", "実際にかかった費用")
 
 
 class Groupby_mean(Feature):
