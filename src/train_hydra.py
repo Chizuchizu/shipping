@@ -41,6 +41,12 @@ def main(cfg):
     test = data[~data["train"]].drop(columns=["train", "shipping_time"])
     target = train["shipping_time"]
     train = train.drop(columns="shipping_time")
+
+    if cfg.base.permutation:
+        imp_cols = pd.read_csv(cwd / f"../features_data/{cfg.permutations}.csv").iloc[:, 0]
+        train = train[imp_cols]
+        test = test[imp_cols]
+
     kfold = KFold(n_splits=cfg.base.n_folds, shuffle=True, random_state=cfg.base.seed)
     pred = np.zeros(test.shape[0])
     score = 0
