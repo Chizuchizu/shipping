@@ -16,13 +16,6 @@ groupby_cols = ["shipment_mode", "weekday", "drop_off_point", "shipping_company"
 calc_cols = ["freight_cost", "gross_weight", "shipment_charges", "cost"]
 
 
-class Cost(Feature):
-    def create_features(self):
-        self.data["cost"] = data["gross_weight"] * data["freight_cost"]
-        data["cost"] = self.data["cost"].copy()
-        create_memo("cost", "実際にかかった費用")
-
-
 class Base_data(Feature):
     def create_features(self):
         self.data = data.drop(columns=["processing_days", "cut_off_time"])
@@ -44,12 +37,18 @@ class Xfeat_data(Feature):
             drop=True
         )
 
-        # self.data["train"] = data["train"].copy()
-        # self.data["shipping_time"] = data["shipping_time"].copy()
+        self.data["train"] = data["train"].copy()
+        self.data["shipping_time"] = data["shipping_time"].copy()
 
-        self.data = pd.concat([self.data, data.drop(columns=["processing_days", "cut_off_time"])], axis=1)
+        # self.data = pd.concat([self.data, data.drop(columns=["processing_days", "cut_off_time"])], axis=1)
 
         create_memo("xfeat_data", "xfeatで作った特徴量")
+
+class Cost(Feature):
+    def create_features(self):
+        self.data["cost"] = data["gross_weight"] * data["freight_cost"]
+        data["cost"] = self.data["cost"].copy()
+        create_memo("cost", "実際にかかった費用")
 
 
 class Target_Encoding(Feature):
